@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Dice Forge Games - Ebook Registration Form',
-  description: 'Adquira seu ebook gratis!',
+  description: 'Adquira seu ebook gratis agora!',
 };
 
 export default function RootLayout({
