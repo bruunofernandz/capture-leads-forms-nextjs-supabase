@@ -15,21 +15,17 @@ A React-based registration form for Dice Forge Games' ebook.
 
 ## Technologies Used
 
-- React
+- Next js
 - TypeScript
 - Zod for validation
 - React Router DOM
-
-## Technologies Used
-
-- React
-- TypeScript
-- Zod for validation
-- React Router DOM
+- Supabase as backend
+- Supabase as database
 
 Getting Started
 
 1. Clone the repository:
+
    ```sh
    git clone https://github.com/your-repo-url.git
 
