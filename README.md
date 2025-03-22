@@ -1,5 +1,62 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## What about this project ?
+
+# Dice Forge Games - Ebook Registration Form
+
+A React-based registration form for Dice Forge Games' ebook.
+
+## Features
+
+- User registration form with validation
+- Phone number input with masking
+- Error handling and display
+- Loading indicator for form submission
+
+## Technologies Used
+
+- React
+- TypeScript
+- Zod for validation
+- React Router DOM
+
+## Technologies Used
+
+- React
+- TypeScript
+- Zod for validation
+- React Router DOM
+
+Getting Started
+
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/your-repo-url.git
+
+   ```
+
+Install dependencies: npm install or yarn install
+Start the development server: npm start or yarn start
+Open the app in your browser: http://localhost:3000
+
+Project Structure
+src/  
+├── components/ # Reusable React components  
+├── containers/ # Top-level components that render the app  
+├── utils/ # Utility functions for validation and formatting  
+└── index.tsx # Entry point for the application
+
+Contributing
+Contributions are welcome! Please submit a pull request with a clear description of the changes.
+
+License
+This project is licensed under the MIT License.
+
+Acknowledgments
+Codeium for providing the code autocomplete and search functionality.
+
+page
+
 ## Getting Started
 
 First, run the development server:
