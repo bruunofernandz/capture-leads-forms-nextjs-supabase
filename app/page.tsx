@@ -1,103 +1,301 @@
-import Image from "next/image";
+'use client';
+
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+import { DialogTrigger } from '@radix-ui/react-dialog';
+import { useMask } from '@react-input/mask';
+import { GalleryVerticalEnd, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { ZodIssue } from 'zod';
+import { createUserInfo } from './actions';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const inputPhoneRef = useMask({
+    mask: '(__) _____-____',
+    replacement: {
+      _: /\d/,
+    },
+  });
+  const [createdUser, setCreatedUser] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
+  const [loading, setLoading] = useState(false);
+  const [createUserInfoError, setCreateUserInfoError] = useState<
+    string | undefined
+  >(undefined);
+  const [zodIssues, setZodIssues] = useState<ZodIssue[] | undefined>(undefined);
+
+  const handleCreateUserInfo = async (formData: FormData) => {
+    console.log('user_name', formData.get('user_name'));
+    console.log('user_email', formData.get('user_email'));
+    console.log('phone_number', formData.get('phone_number'));
+    setLoading(true);
+
+    const { isCreatedUser, error, zodIssues } = await createUserInfo(formData);
+
+    if (error) {
+      console.log('ERROR!');
+
+      setCreateUserInfoError(error);
+
+      setLoading(false);
+    }
+
+    if (zodIssues) {
+      setZodIssues(zodIssues);
+
+      if (zodIssues.length > 0) {
+        console.log('ZOD ERROR!');
+
+        zodIssues.forEach((issue) => {
+          setZodIssues([issue]);
+        });
+        setLoading(false);
+        return;
+      }
+    }
+
+    if (!error) {
+      console.log('isCreatedAccount', isCreatedUser);
+      setCreatedUser(isCreatedUser);
+
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="h-screen w-screen bg-[#09090ad9]  flex flex-col justify-items-center items-center font-[family-name:var(--font-geist-sans)]">
+      <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+        <div className="flex w-full max-w-sm flex-col gap-6">
           <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
+            className="flex items-center gap-2 self-center font-medium text-white"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+              <GalleryVerticalEnd className="size-4" />
+            </div>
+            Dice Forge Games.
           </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          <div className={cn('flex flex-col gap-6')}>
+            {createdUser && (
+              <div className="text-center text-gray-300">
+                Aproveite seu ebook grátis!🎉
+                <a href="https://imhmolmrjfocnrvlhitq.supabase.co/storage/v1/object/public/freebook//Guia-Completo-Como-Rodar-a-Unreal-Engine-5-em-PCs-Modestos%20(1).pdf">
+                  <Button
+                    type="submit"
+                    className="w-full bg-[#9059FF] hover:bg-[#9059ff98] mt-8 cursor-pointer h-12"
+                    formAction={handleCreateUserInfo}
+                  >
+                    BAIXAR EBOOK
+                  </Button>
+                </a>
+              </div>
+            )}
+
+            {!createdUser && (
+              <Card className="bg-zinc-900 overflow-hidden border-zinc-700 bg-origin-border rounded-[10px]">
+                <CardHeader className="text-center">
+                  <CardTitle className="text-lg text-left text-[#9059FF]">
+                    Garanta seu ebook gratuíto!
+                  </CardTitle>
+                  <CardDescription className="text-left text-gray-300">
+                    Preencha o formulário para ter acesso ao material de apoio.
+                  </CardDescription>
+
+                  {zodIssues && (
+                    <Label htmlFor="ErrorForm" className="text-red-500">
+                      {zodIssues?.map((i) => i.message)}
+                    </Label>
+                  )}
+
+                  {createUserInfoError && (
+                    <Label className="text-red-500" htmlFor="ErrorAPI">
+                      {createUserInfoError}
+                    </Label>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  <form>
+                    <div className="grid gap-6">
+                      <div className="grid gap-6">
+                        <div className="grid gap-3">
+                          <Label htmlFor="user_name" className="text-gray-50">
+                            Seu nome completo
+                          </Label>
+                          <Input
+                            id="user_name"
+                            name="user_name"
+                            type="text"
+                            placeholder="Dice Forge Games da Silva"
+                            className="border-zinc-700 text-white"
+                            required
+                          />
+                        </div>
+
+                        <div className="grid gap-3">
+                          <Label htmlFor="user_email" className="text-gray-50">
+                            Email
+                          </Label>
+                          <Input
+                            id="user_email"
+                            name="user_email"
+                            type="email"
+                            placeholder="m@example.com"
+                            className="border-zinc-700 text-white"
+                            required
+                          />
+                        </div>
+                        <div className="grid gap-3">
+                          <div className="flex items-center">
+                            <Label
+                              htmlFor="phone_number"
+                              className="text-gray-50"
+                            >
+                              Seu número de Whatsapp
+                            </Label>
+                          </div>
+                          <Input
+                            id="phone"
+                            name="phoneNumber"
+                            type="text"
+                            placeholder="(19) 98978-6785"
+                            className="border-zinc-700 text-white"
+                            ref={inputPhoneRef}
+                            defaultValue=""
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="w-full bg-[#9059FF] hover:bg-[#9059ff98] mt-8 cursor-pointer h-12"
+                      formAction={handleCreateUserInfo}
+                    >
+                      {loading ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <p>GARANTIR EBOOK GRATUITO</p>
+                      )}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            )}
+
+            {!createdUser && (
+              <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
+                <Dialog>
+                  <DialogTrigger>
+                    By clicking continue, you agree to our{' '}
+                    <a href="#">Terms of Service</a> and{' '}
+                    <a href="#">Privacy Policy</a>.
+                  </DialogTrigger>
+
+                  <DialogContent className=" bg-zinc-900 overflow-hidden border-none bg-origin-border rounded-[10px]">
+                    <DialogTitle></DialogTitle>
+                    <div className="h-[350px] p-6 bg-zinc-800 rounded-lg shadow-lg overflow-scroll mt-4">
+                      <h1 className="text-3xl font-bold text-left text-white mb-6">
+                        Termos e Condições para Captação de Leads
+                      </h1>
+
+                      <section className="mb-6">
+                        <h2 className="text-xl font-semibold text-white">
+                          1. Aceitação dos Termos
+                        </h2>
+                        <p className="text-gray-400 mt-2">
+                          Ao fornecer seus dados pessoais por meio de nossos
+                          formulários, você concorda com os termos e condições
+                          estabelecidos neste documento. Se não concordar,
+                          pedimos que não forneça suas informações.
+                        </p>
+                      </section>
+
+                      <section className="mb-6">
+                        <h2 className="text-xl font-semibold text-white">
+                          2. Finalidade da Coleta de Dados
+                        </h2>
+                        <p className="text-gray-400 mt-2">
+                          Os dados coletados serão utilizados para fins de
+                          comunicação, marketing e envio de informações
+                          relacionadas aos nossos produtos e serviços.
+                        </p>
+                      </section>
+
+                      <section className="mb-6">
+                        <h2 className="text-xl font-semibold text-white">
+                          3. Compartilhamento de Informações
+                        </h2>
+                        <p className="text-gray-400 mt-2">
+                          Seus dados não serão vendidos, alugados ou
+                          compartilhados com terceiros sem seu consentimento,
+                          exceto quando exigido por lei ou necessário para
+                          execução de serviços contratados.
+                        </p>
+                      </section>
+
+                      <h1 className="text-3xl font-bold text-center text-white mt-10 mb-6">
+                        Política de Privacidade para Captação de Leads
+                      </h1>
+
+                      <section className="mb-6">
+                        <h2 className="text-xl font-semibold text-white">
+                          1. Informações Coletadas
+                        </h2>
+                        <p className="text-gray-400 mt-2">
+                          Coletamos informações pessoais, como nome, e-mail e
+                          telefone, fornecidas voluntariamente pelo usuário
+                          através de nossos formulários.
+                        </p>
+                      </section>
+
+                      <section className="mb-6">
+                        <h2 className="text-xl font-semibold text-white">
+                          2. Uso das Informações
+                        </h2>
+                        <p className="text-gray-400 mt-2">
+                          Os dados coletados serão utilizados para enviar
+                          comunicações, promoções, newsletters e informações
+                          sobre nossos produtos e serviços.
+                        </p>
+                      </section>
+
+                      <section className="mb-6">
+                        <h2 className="text-xl font-semibold text-white">
+                          6. Contato
+                        </h2>
+                        <p className="text-gray-400 mt-2">
+                          Para dúvidas ou solicitações relacionadas à
+                          privacidade de seus dados, entre em contato conosco
+                          através do e-mail:
+                          <a
+                            href="mailto:bruunofernandz9@gmail.com"
+                            className="text-blue-600 hover:underline"
+                          >
+                            {' '}
+                            bruunofernandz9@gmail.com
+                          </a>
+                          .
+                        </p>
+                      </section>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            )}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }
