@@ -35,16 +35,11 @@ export default function Home() {
   const [zodIssues, setZodIssues] = useState<ZodIssue[] | undefined>(undefined);
 
   const handleCreateUserInfo = async (formData: FormData) => {
-    console.log('user_name', formData.get('user_name'));
-    console.log('user_email', formData.get('user_email'));
-    console.log('phone_number', formData.get('phone_number'));
     setLoading(true);
 
     const { isCreatedUser, error, zodIssues } = await createUserInfo(formData);
 
     if (error) {
-      console.log('ERROR!');
-
       setCreateUserInfoError(error);
 
       setLoading(false);
@@ -54,8 +49,6 @@ export default function Home() {
       setZodIssues(zodIssues);
 
       if (zodIssues.length > 0) {
-        console.log('ZOD ERROR!');
-
         zodIssues.forEach((issue) => {
           setZodIssues([issue]);
         });
@@ -65,7 +58,6 @@ export default function Home() {
     }
 
     if (!error) {
-      console.log('isCreatedAccount', isCreatedUser);
       setCreatedUser(isCreatedUser);
 
       setLoading(false);

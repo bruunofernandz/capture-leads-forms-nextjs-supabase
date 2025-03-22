@@ -40,15 +40,10 @@ export async function createUserInfo(
     ]);
 
   if (userInfoError?.code === '42501' || userInfoError !== null) {
-    console.log('Error creating user', userInfoError);
     return {
       error: 'Invalid credentials. Please try again',
       isCreatedUser: false,
     };
-  }
-
-  if (userInfo) {
-    console.log('CreatedUser!!!', userInfo);
   }
 
   return {
