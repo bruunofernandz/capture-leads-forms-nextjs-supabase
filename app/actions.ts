@@ -28,7 +28,7 @@ export async function createUserInfo(
 
   const validatedData = userInfoSchema.parse(data);
 
-  const { data: userInfo, error: userInfoError } = await supabase
+  const { error: userInfoError } = await supabase
     .from('users_leads_table')
     .insert([
       {
